@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exam Details</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+  <div class="container mx-auto px-4 py-6">
+    <h3 class="text-center text-2xl font-semibold mb-6 text-gray-800">Exam Details</h3>
+    
+    <!-- Table -->
+    <div class="overflow-x-auto bg-white rounded-lg shadow-md">
+      <table class="min-w-full table-auto text-sm text-left text-gray-500">
+        <thead class="bg-indigo-600 text-white">
+          <tr>
+            <th class="px-4 py-2 border-b">Subject Name</th>
+            <th class="px-4 py-2 border-b">Exam Name</th>
+            <th class="px-4 py-2 border-b">Number of MCQ Questions</th>
+            <th class="px-4 py-2 border-b">Created At</th>
+            <th class="px-4 py-2 border-b">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% exams.forEach(exam => { %>
+            <tr class="border-b hover:bg-gray-50">
+              <td class="px-4 py-2"><%= exam.subjectName %></td>
+              <td class="px-4 py-2"><%= exam.examName %></td>
+              <td class="px-4 py-2"><%= exam.numberOfQuestions %></td>
+              <td class="px-4 py-2"><%= new Date(exam.createdAt).toLocaleString() %></td>
+              <td class="px-4 py-2 text-center">
+                <a href="/exam-started/<%= exam._id %>" class="inline-block bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-500">Start the Exam</a>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</body>
+</html>

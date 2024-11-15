@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gray-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Exam Details</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="h-full">
+
+  <!-- Container for the form -->
+  <div class="flex items-center justify-center min-h-screen bg-gray-100 p-4">
+    <div class="w-full max-w-lg bg-white p-6 rounded-lg shadow-lg">
+      
+      <!-- Card Header -->
+      <div class="bg-indigo-600 text-white text-center p-4 rounded-t-lg">
+        <h3 class="text-xl font-semibold">Add Exam Details</h3>
+      </div>
+      
+      <!-- Card Body -->
+      <div class="p-4">
+        <form action="/add-exam" method="post">
+          
+          <!-- Subject Name Input -->
+          <div class="mb-4">
+            <label for="subjectName" class="block text-sm font-medium text-gray-700">Subject Name</label>
+            <input type="text" id="subjectName" name="subjectName" required placeholder="Enter subject name"
+              class="mt-2 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+          </div>
+          
+          <!-- Exam Name Input -->
+          <div class="mb-4">
+            <label for="examName" class="block text-sm font-medium text-gray-700">Exam Name</label>
+            <input type="text" id="examName" name="examName" required placeholder="Enter exam name"
+              class="mt-2 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+          </div>
+          
+          <!-- Number of Questions Input -->
+          <div class="mb-4">
+            <label for="numberOfQuestions" class="block text-sm font-medium text-gray-700">Number of MCQ Questions</label>
+            <input type="number" id="numberOfQuestions" name="numberOfQuestions" min="1" required placeholder="Enter number of questions"
+              class="mt-2 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+          </div>
+          
+          <!-- Submit Button -->
+          <div class="mb-4">
+            <button type="submit" class="w-full py-3 bg-indigo-600 text-white text-lg rounded-md shadow-md hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+              Add Exam
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

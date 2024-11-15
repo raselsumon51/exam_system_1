@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exam Details</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+  <div class="container mx-auto mt-10 px-4">
+    <h3 class="text-3xl font-semibold text-center mb-6 text-gray-800">Exam Details</h3>
+    
+    <div class="overflow-x-auto bg-white shadow-md rounded-lg">
+      <table class="min-w-full table-auto text-gray-700">
+        <thead class="bg-indigo-600 text-white">
+          <tr>
+            <th class="py-3 px-6 text-left">Subject Name</th>
+            <th class="py-3 px-6 text-left">Exam Name</th>
+            <th class="py-3 px-6 text-left">Number of MCQ Questions</th>
+            <th class="py-3 px-6 text-left">Created At</th>
+            <th class="py-3 px-6 text-left">Action</th>
+            <th class="py-3 px-6 text-left">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% exams.forEach(exam => { %>
+            <tr class="border-b hover:bg-gray-50">
+              <td class="py-3 px-6"><%= exam.subjectName %></td>
+              <td class="py-3 px-6"><%= exam.examName %></td>
+              <td class="py-3 px-6"><%= exam.numberOfQuestions %></td>
+              <td class="py-3 px-6"><%= new Date(exam.createdAt).toLocaleString() %></td>
+              <td class="py-3 px-6">
+                <a href="/exam/<%= exam._id %>/<%= exam.numberOfQuestions %>" class="inline-block px-4 py-2 bg-blue-600 text-white font-medium rounded-md shadow-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400">Add Questions</a>
+              </td>
+              <td class="py-3 px-6">
+                <a href="/exam/<%= exam._id %>/" class="inline-block px-4 py-2 bg-green-600 text-white font-medium rounded-md shadow-md hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-400">Add One Question</a>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</body>
+</html>
