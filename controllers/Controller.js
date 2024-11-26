@@ -32,7 +32,7 @@ exports.submitHomeForm = async (req, res) => {
             await collection.insertOne({
                 email,
                 password,
-                role:"user"
+                role:"student"
             });
             //  console.log('Form data inserted:', req.body);
              res.redirect("/login")

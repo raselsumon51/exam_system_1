@@ -63,16 +63,16 @@ router.post("/question-submit",isAuthenticated, questionSubmitController);
 // /exam-1
 
 // router.get("/exam-1",examOneController);
-router.post("/submit-answers",isAuthenticated, submitAnsController);
-router.get("/result",isAuthenticated, resultController);
-router.get("/all-marks/:examId/:userId", isAuthenticated, allMarksController);
+router.post("/submit-answers", submitAnsController);
+router.get("/result", resultController);
+router.get("/all-marks/:examId/:userId", allMarksController);
 router.get("/subject-wise-marks", isAuthenticated, subjectWiseMarksController);
 // /all-answer/${examId}/${userId}
 
 router.get("/start-an-exam", isAuthenticated, startAnExamController);
-router.get("/exam-started/:examId", isAuthenticated, getQuestionController);
+router.get("/exam-started/:examId", getQuestionController);
 
-router.get("/correct-answer/:examId",isAuthenticated, correctAnswerController);
+router.get("/correct-answer/:examId", correctAnswerController);
 
 module.exports = router;
 

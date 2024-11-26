@@ -14,20 +14,20 @@
         <div class="bg-blue-600 text-white p-4 rounded-t-lg">
           <h1 class="text-2xl font-semibold">Exam: <%= exam.examName %></h1>
         </div>
-        <div class="p-4">
+        <div class="p-4 px-5">
           <p class="mb-2"><strong>Subject:</strong> <%= exam.subjectName %></p>
           <p class="mb-2"><strong>Number of Questions:</strong> <%= exam.numberOfQuestions %></p>
-          <p class="mb-4"><strong>Created At:</strong> <%= new Date(exam.createdAt).toLocaleString() %></p>
+          <!-- <p class="mb-4"><strong>Created At:</strong> <%= new Date(exam.createdAt).toLocaleString() %></p> -->
           
           <form action="/submit-answers" method="POST">
             <input type="hidden" name="examId" value="<%= examId %>">
   
             <% exam.questions.forEach((questionSet, setIndex) => { %>
-              <div class="mt-6">
-                <h2 class="text-xl font-semibold">Question Set <%= setIndex + 1 %>:</h2>
+              <div class="mt-6 px-5">
+                <!-- <h2 class="text-xl font-semibold">Question Set <%= setIndex + 1 %>:</h2> Question -->
                 <% questionSet.questions.forEach((question, index) => { %>
                   <div class="mb-4">
-                    <h3 class="text-lg font-medium">Question <%= index + 1 %>: <%= question.text %></h3>
+                    <h3 class="text-lg font-medium"> <%= index + 1 %>. <%= question.text %></h3>
                     <div class="space-y-2 mt-2">
                       <% let optionLabels = ['A', 'B', 'C', 'D']; %>
                       <% let optionIndex = 0; %>
