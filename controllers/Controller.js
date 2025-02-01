@@ -295,6 +295,35 @@ exports.getQuestionController = async (req, res) => {
   }
 };
 
+
+
+
+exports.deleteExamController = async (req, res) => {
+  try {
+    const examId = req.params.examId; 
+    const db = await connectToDB(); 
+
+    const result = await db.collection('exams').deleteOne({ _id: new ObjectId(examId) });
+    await db.collection('questions').deleteOne({ _id: new ObjectId(examId) });
+    await db.collection('results').deleteOne({ _id: new ObjectId(examId) });
+
+    if (result.deletedCount === 0) {
+      return res.status(404).send('Exam not found.');
+    }
+
+    res.redirect('/start-an-exam'); 
+  } catch (err) {
+    console.error('Error deleting exam:', err);
+    res.status(500).send('An error occurred while deleting the exam.');
+  }
+};
+
+
+
+
+
+
+
 // 
 exports.submitAnsController = async (req, res) => {
   try {

@@ -6,19 +6,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
-
 app.set('view engine', 'ejs');
-const {subjectWiseMarksController, allMarksController, submitOnequestionController, addOnequestionController,correctAnswerController,resultController,startAnExamController, submitAnsController,getQuestionController, homeController, submitHomeForm , loginController, submitloginForm, dashboardController,logoutController, addQuestionController, addExamController,getExamsController, questionsController,questionSubmitController} = require('../controllers/Controller');
-
-router.route('/')
-   .get(homeController)
-   .post(submitHomeForm)
-
-
-router.route('/login')
-   .get(loginController)
-   .post(submitloginForm)
-
+const {deleteExamController,subjectWiseMarksController, allMarksController, submitOnequestionController, addOnequestionController,correctAnswerController,resultController,startAnExamController, submitAnsController,getQuestionController, homeController, submitHomeForm , loginController, submitloginForm, dashboardController,logoutController, addQuestionController, addExamController,getExamsController, questionsController,questionSubmitController} = require('../controllers/Controller');
 
    // Middleware to check authentication
    // Middleware to check if user is logged in
@@ -46,6 +35,15 @@ const isAuthenticated = (req, res, next) => {
 //    // }
 // };
 
+
+router.route('/')
+   .get(homeController)
+   .post(submitHomeForm)
+
+router.route('/login')
+   .get(loginController)
+   .post(submitloginForm)
+
 router.route('/dashboard')
    .get(isAuthenticated, dashboardController)
 
@@ -69,8 +67,11 @@ router.get("/all-marks/:examId/:userId", allMarksController);
 router.get("/subject-wise-marks", isAuthenticated, subjectWiseMarksController);
 // /all-answer/${examId}/${userId}
 
+//Exam List Page Route 
 router.get("/start-an-exam", isAuthenticated, startAnExamController);
 router.get("/exam-started/:examId", getQuestionController);
+router.post("/exam/delete/:examId", deleteExamController);
+
 
 router.get("/correct-answer/:examId", correctAnswerController);
 

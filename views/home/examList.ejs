@@ -5,6 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Exam Details</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Confirmation dialog before deleting an exam
+    function confirmDelete(examId) {
+      if (confirm("Are you sure you want to delete this exam? This action cannot be undone.")) {
+        document.getElementById(`deleteForm-${examId}`).submit();
+      }
+    }
+  </script>
 </head>
 <body class="bg-gray-100">
 
@@ -20,7 +28,7 @@
             <th class="px-4 py-2 border-b">Exam Name</th>
             <th class="px-4 py-2 border-b">Number of MCQ Questions</th>
             <th class="px-4 py-2 border-b">Created At</th>
-            <th class="px-4 py-2 border-b">Action</th>
+            <th class="px-4 py-2 border-b text-center">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -32,6 +40,16 @@
               <td class="px-4 py-2"><%= new Date(exam.createdAt).toLocaleString() %></td>
               <td class="px-4 py-2 text-center">
                 <a href="/exam-started/<%= exam._id %>" class="inline-block bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-500">Start the Exam</a>
+                <!-- Hidden form for deleting the exam -->
+                <form id="deleteForm-<%= exam._id %>" action="http://localhost:3001/exam/delete/<%= exam._id %>" method="POST" style="display: none;">
+                  
+                </form>
+                <!-- Delete button -->
+                <button 
+                  onclick="confirmDelete('<%= exam._id %>')" 
+                  class="inline-block bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-500 ml-2">
+                  Delete
+                </button>
               </td>
             </tr>
           <% }); %>

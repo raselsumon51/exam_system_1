@@ -6,38 +6,52 @@
   <title>Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="h-full relative">
-  <!-- Top-right section <%= role %> -->
-  <div class="absolute top-4 right-4 flex items-center space-x-4 bg-white p-2 rounded-md shadow-md">
-    <h5 class="text-sm text-gray-700 font-medium"> <%= email %></h5>
-    <a href="/logout" class="px-4 py-2 bg-red-600 text-white rounded-md shadow-sm hover:bg-red-500">Logout</a>
-  </div>
+<body class="h-full flex flex-col">
 
-  <!-- Centered square buttons -->
-  <div class="h-full flex items-center justify-center">
+  <!-- Header -->
+  <header class="bg-blue-600 text-white ">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 class="text-xl font-semibold">Dashboard</h1>
+      <div class="flex items-center space-x-4">
+        <h5 class="text-sm text-gray-200 font-medium"> <%= email %></h5>
+        <a href="/logout" class="px-4 py-2 bg-red-600 text-white rounded-md shadow-sm hover:bg-red-500">Logout</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-grow flex items-center justify-center">
     <div class="grid grid-cols-2 gap-6">
       <% if (role === 'user') { %>
-        <a href="/add-question" class="flex items-center justify-center h-32 w-32  px-20 bg-indigo-600 text-white text-center rounded-md shadow-md hover:bg-indigo-500 text-lg font-medium">
+        <a href="/add-question" class="flex items-center justify-center h-32 w-32 px-20 bg-indigo-600 text-white text-center rounded-md shadow-md hover:bg-indigo-500 text-lg font-medium">
           Add Exams
         </a>
-        <a href="/exams" class="flex items-center justify-center h-32 w-32  px-20 bg-indigo-600 text-white text-center rounded-md shadow-md hover:bg-indigo-500 text-lg font-medium">
+        <a href="/exams" class="flex items-center justify-center h-32 w-32 px-20 bg-indigo-600 text-white text-center rounded-md shadow-md hover:bg-indigo-500 text-lg font-medium">
           Add Questions
         </a>
         <a href="/subject-wise-marks" class="flex items-center justify-center h-32 w-32 px-20 bg-indigo-600 text-white text-center rounded-md shadow-md hover:bg-indigo-500 text-lg font-medium">
           Obtained Marks
         </a>
-        <a href="/start-an-exam" class="flex items-center justify-center h-32 w-32  px-20 bg-indigo-600 text-white text-center rounded-md shadow-md hover:bg-indigo-500 text-lg font-medium">
-          Start  Exam
+        <a href="/start-an-exam" class="flex items-center justify-center h-32 w-32 px-20 bg-indigo-600 text-white text-center rounded-md shadow-md hover:bg-indigo-500 text-lg font-medium">
+          Start Exam
         </a>
       <% } else { %>
-      <a href="/start-an-exam" class="flex items-center justify-center h-32 w-32  px-20 bg-indigo-600 text-white text-center rounded-md shadow-md hover:bg-indigo-500 text-lg font-medium">
-        Start  Exam
-      </a>
-      <a href="/subject-wise-marks" class="flex items-center justify-center h-32 w-32 px-20 bg-indigo-600 text-white text-center rounded-md shadow-md hover:bg-indigo-500 text-lg font-medium">
-        Obtained Marks
-      </a>
+        <a href="/start-an-exam" class="flex items-center justify-center h-32 w-32 px-20 bg-indigo-600 text-white text-center rounded-md shadow-md hover:bg-indigo-500 text-lg font-medium">
+          Start Exam
+        </a>
+        <a href="/subject-wise-marks" class="flex items-center justify-center h-32 w-32 px-20 bg-indigo-600 text-white text-center rounded-md shadow-md hover:bg-indigo-500 text-lg font-medium">
+          Obtained Marks
+        </a>
       <% } %>
     </div>
-  </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-white">
+    <div class="container mx-auto px-4 py-4 flex justify-center">
+      <p class="text-sm">© <%= new Date().getFullYear() %> Your Company. All rights reserved.</p>
+    </div>
+  </footer>
+
 </body>
 </html>
