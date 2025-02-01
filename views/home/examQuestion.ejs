@@ -9,21 +9,21 @@
   <style>
     body {
       font-family: 'Inter', sans-serif;
-      font-size: 14px;
+      font-size: 16px;
     }
     h1 {
-      font-size: 20px;
+      font-size: 24px;
       font-weight: 700;
     }
     h3 {
-      font-size: 18px;
+      font-size: 20px;
       font-weight: 600;
     }
     label {
-      font-size: 14px;
+      font-size: 16px;
     }
     button {
-      font-size: 16px;
+      font-size: 18px;
     }
     .container {
       max-width: 900px;
@@ -50,13 +50,13 @@
               <div class="mt-6">
                 <% questionSet.questions.forEach((question, index) => { %>
                   <div class="mb-4 p-4 bg-gray-50 rounded-lg">
-                    <h3> <%= index + 1 %>. <%= question.text %> </h3>
+                    <h3> <b><%= index + 1 %>. <%= question.text %></b> </h3>
                     <div class="space-y-2 mt-2">
                       <% let optionLabels = ['A', 'B', 'C', 'D']; %>
                       <% let optionIndex = 0; %>
                       <% for (const [key, value] of Object.entries(question.options)) { %>
                         <div class="flex items-center gap-2">
-                          <input class="h-4 w-4 text-blue-600" type="radio" name="question_<%= setIndex %>_<%= index %>" id="option_<%= setIndex %>_<%= index %>_<%= key %>" value="<%= key %>" />
+                          <input class="h-5 w-5 text-blue-600" type="radio" name="question_<%= setIndex %>_<%= index %>" id="option_<%= setIndex %>_<%= index %>_<%= key %>" value="<%= key %>" />
                           <label for="option_<%= setIndex %>_<%= index %>_<%= key %>">
                             <b><%= optionLabels[optionIndex] %>.</b> <%= value %>
                           </label>
