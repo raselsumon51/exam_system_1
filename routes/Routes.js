@@ -69,7 +69,7 @@ router.get("/subject-wise-marks", isAuthenticated, subjectWiseMarksController);
 
 //Exam List Page Route 
 router.get("/start-an-exam", isAuthenticated, startAnExamController);
-router.get("/exam-started/:examId", getQuestionController);
+router.get("/exam-started/:examId", getQuestionController);   // home/examQuestions
 router.post("/exam/delete/:examId", deleteExamController);
 
 
