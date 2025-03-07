@@ -1,13 +1,15 @@
 const express = require('express');
 const app = express();
 const {connectToDB}  = require("../connection/db");
-const { resolveInclude } = require('ejs');
 const { ObjectId } = require('mongodb');
-
+const path = require('path');
+const fs = require('fs');
+const xlsx = require('xlsx');
 
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 
 // Home route
 exports.homeController = (req, res) => {
@@ -756,3 +758,86 @@ exports.subjectWiseMarksController = async (req, res) => {
     res.status(500).send('An error occurred while fetching exams.');
   }
 }
+
+//make getExcelFormController
+exports.getExcelFormController = async (req, res) => {
+  // /excel/:examId/
+  // console.log("hi");
+  const examId = req.params.examId;
+
+  res.render('home/excelForm', {
+    layout: './layouts/admin',
+    examId 
+  });
+};
+
+
+
+
+
+exports.postExcelFormController = async (req, res) => {
+    try {
+        // Check if a file was uploaded
+        if (!req.files || !req.files.excel) {
+            return res.status(400).send('No file uploaded.');
+        }
+
+        const examId = req.params.examId;  // Get examId from URL parameter
+        const file = req.files.excel;  // Get the uploaded file
+        const uploadDir = path.join(__dirname, '../uploads'); // Ensure uploads directory
+        const filePath = path.join(uploadDir, file.name); // Define full file path
+
+        // Ensure the uploads directory exists
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
+
+        // Move the file to the uploads directory
+        await new Promise((resolve, reject) => {
+            file.mv(filePath, (err) => {
+                if (err) {
+                    console.error('Error saving file:', err);
+                    return reject('Error saving file.');
+                }
+                resolve();
+            });
+        });
+
+        // Read the Excel file
+        const workbook = xlsx.readFile(filePath);
+        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        const data = xlsx.utils.sheet_to_json(worksheet);
+
+        const formattedExamId = new ObjectId(examId);
+
+        const formattedQuestions = data.map((item, index) => {
+            return {
+                number: index + 1, // Add question number, starting from 1
+                text: item.Question, // Get the question text
+                options: {
+                    a: item.Option_A,
+                    b: item.Option_B,
+                    c: item.Option_C,
+                    d: item.Option_D
+                },
+                correctAnswer: item.Answer // The selected answer(s)
+            };
+        });
+
+        const db = await connectToDB(); 
+
+        // Save the examId and formatted questions to MongoDB
+        const result = await db.collection('questions')
+            .insertOne({ examId: formattedExamId, questions: formattedQuestions });
+
+          res.redirect('/dashboard'); // Redirect to the exam list page
+        // res.status(200).json({
+        //     message: 'Questions have been saved successfully!',
+        //     result: result
+        // });
+
+    } catch (err) {
+        console.error('Error:', err);
+        res.status(500).send('Internal server error.');
+    }
+};

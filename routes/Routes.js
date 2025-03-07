@@ -7,7 +7,7 @@ app.use(express.urlencoded({ extended: true }));
 
 
 app.set('view engine', 'ejs');
-const {deleteExamController,subjectWiseMarksController, allMarksController, submitOnequestionController, addOnequestionController,correctAnswerController,resultController,startAnExamController, submitAnsController,getQuestionController, homeController, submitHomeForm , loginController, submitloginForm, dashboardController,logoutController, addQuestionController, addExamController,getExamsController, questionsController,questionSubmitController} = require('../controllers/Controller');
+const {postExcelFormController,getExcelFormController, deleteExamController,subjectWiseMarksController, allMarksController, submitOnequestionController, addOnequestionController,correctAnswerController,resultController,startAnExamController, submitAnsController,getQuestionController, homeController, submitHomeForm , loginController, submitloginForm, dashboardController,logoutController, addQuestionController, addExamController,getExamsController, questionsController,questionSubmitController} = require('../controllers/Controller');
 
    // Middleware to check authentication
    // Middleware to check if user is logged in
@@ -71,6 +71,13 @@ router.get("/subject-wise-marks", isAuthenticated, subjectWiseMarksController);
 router.get("/start-an-exam", isAuthenticated, startAnExamController);
 router.get("/exam-started/:examId", getQuestionController);   // home/examQuestions
 router.post("/exam/delete/:examId", deleteExamController);
+
+
+// add  exam/67b4f554e5c0caa3812a7a80/excel route
+router.get("/excel/:examId/", getExcelFormController);
+//post
+router.post("/excel/:examId/", postExcelFormController);
+
 
 
 router.get("/correct-answer/:examId", correctAnswerController);
