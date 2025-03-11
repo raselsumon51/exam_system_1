@@ -772,9 +772,6 @@ exports.getExcelFormController = async (req, res) => {
 };
 
 
-
-
-
 exports.postExcelFormController = async (req, res) => {
     try {
         // Check if a file was uploaded
@@ -782,62 +779,37 @@ exports.postExcelFormController = async (req, res) => {
             return res.status(400).send('No file uploaded.');
         }
 
-        const examId = req.params.examId;  // Get examId from URL parameter
-        const file = req.files.excel;  // Get the uploaded file
-        const uploadDir = path.join(__dirname, '../uploads'); // Ensure uploads directory
-        const filePath = path.join(uploadDir, file.name); // Define full file path
+        const examId = req.params.examId; // Get examId from URL parameter
+        const file = req.files.excel; // Get the uploaded file
 
-        // Ensure the uploads directory exists
-        if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir, { recursive: true });
-        }
-
-        // Move the file to the uploads directory
-        await new Promise((resolve, reject) => {
-            file.mv(filePath, (err) => {
-                if (err) {
-                    console.error('Error saving file:', err);
-                    return reject('Error saving file.');
-                }
-                resolve();
-            });
-        });
-
-        // Read the Excel file
-        const workbook = xlsx.readFile(filePath);
+        // Read the Excel file from memory buffer
+        const workbook = xlsx.read(file.data, { type: 'buffer' });
         const worksheet = workbook.Sheets[workbook.SheetNames[0]];
         const data = xlsx.utils.sheet_to_json(worksheet);
 
+        // Format examId and questions
         const formattedExamId = new ObjectId(examId);
+        const formattedQuestions = data.map((item, index) => ({
+            number: index + 1,
+            text: item.Question,
+            options: {
+                a: item.Option_A,
+                b: item.Option_B,
+                c: item.Option_C,
+                d: item.Option_D
+            },
+            correctAnswer: item.Answer
+        }));
 
-        const formattedQuestions = data.map((item, index) => {
-            return {
-                number: index + 1, // Add question number, starting from 1
-                text: item.Question, // Get the question text
-                options: {
-                    a: item.Option_A,
-                    b: item.Option_B,
-                    c: item.Option_C,
-                    d: item.Option_D
-                },
-                correctAnswer: item.Answer // The selected answer(s)
-            };
-        });
+        // Connect to MongoDB and insert data
+        const db = await connectToDB();
+        await db.collection('questions').insertOne({ examId: formattedExamId, questions: formattedQuestions });
 
-        const db = await connectToDB(); 
-
-        // Save the examId and formatted questions to MongoDB
-        const result = await db.collection('questions')
-            .insertOne({ examId: formattedExamId, questions: formattedQuestions });
-
-          res.redirect('/dashboard'); // Redirect to the exam list page
-        // res.status(200).json({
-        //     message: 'Questions have been saved successfully!',
-        //     result: result
-        // });
+        res.redirect('/dashboard'); // Redirect to dashboard
 
     } catch (err) {
         console.error('Error:', err);
         res.status(500).send('Internal server error.');
     }
 };
+
