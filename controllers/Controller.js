@@ -772,44 +772,111 @@ exports.getExcelFormController = async (req, res) => {
 };
 
 
+// exports.postExcelFormController = async (req, res) => {
+//     try {
+//         // Check if a file was uploaded
+//         if (!req.files || !req.files.excel) {
+//             return res.status(400).send('No file uploaded.');
+//         }
+
+//         const examId = req.params.examId; // Get examId from URL parameter
+//         const file = req.files.excel; // Get the uploaded file
+
+//         // Read the Excel file from memory buffer
+//         const workbook = xlsx.read(file.data, { type: 'buffer' });
+//         const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+//         const data = xlsx.utils.sheet_to_json(worksheet);
+
+//         // Format examId and questions
+//         const formattedExamId = new ObjectId(examId);
+//         const formattedQuestions = data.map((item, index) => ({
+//             number: index + 1,
+//             text: item.Question,
+//             options: {
+//                 a: item.Option_A,
+//                 b: item.Option_B,
+//                 c: item.Option_C,
+//                 d: item.Option_D
+//             },
+//             correctAnswer: item.Answer
+//         }));
+
+//         // Connect to MongoDB and insert data
+//         const db = await connectToDB();
+//         await db.collection('questions').insertOne({ examId: formattedExamId, questions: formattedQuestions });
+
+//         res.redirect('/dashboard'); // Redirect to dashboard
+
+//     } catch (err) {
+//         console.error('Error:', err);
+//         res.status(500).send('Internal server error.');
+//     }
+// };
+
 exports.postExcelFormController = async (req, res) => {
-    try {
-        // Check if a file was uploaded
-        if (!req.files || !req.files.excel) {
-            return res.status(400).send('No file uploaded.');
-        }
+  try {
+      // Check if a file was uploaded
+      if (!req.files || !req.files.excel) {
+          return res.status(400).send('No file uploaded.');
+      }
 
-        const examId = req.params.examId; // Get examId from URL parameter
-        const file = req.files.excel; // Get the uploaded file
+      const examId = req.params.examId; // Get examId from URL parameter
+      if (!ObjectId.isValid(examId)) {
+          return res.status(400).send('Invalid examId.');
+      }
 
-        // Read the Excel file from memory buffer
-        const workbook = xlsx.read(file.data, { type: 'buffer' });
-        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-        const data = xlsx.utils.sheet_to_json(worksheet);
+      const file = req.files.excel; // Get the uploaded file
 
-        // Format examId and questions
-        const formattedExamId = new ObjectId(examId);
-        const formattedQuestions = data.map((item, index) => ({
-            number: index + 1,
-            text: item.Question,
-            options: {
-                a: item.Option_A,
-                b: item.Option_B,
-                c: item.Option_C,
-                d: item.Option_D
-            },
-            correctAnswer: item.Answer
-        }));
+      // Read the Excel file from memory buffer
+      const workbook = xlsx.read(file.data, { type: 'buffer' });
+      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+      const data = xlsx.utils.sheet_to_json(worksheet);
 
-        // Connect to MongoDB and insert data
-        const db = await connectToDB();
-        await db.collection('questions').insertOne({ examId: formattedExamId, questions: formattedQuestions });
+      // Format examId and questions
+      const formattedExamId = new ObjectId(examId);
+      const formattedQuestions = data.map((item, index) => ({
+          number: index + 1,
+          text: item.Question,
+          options: {
+              a: item.Option_A,
+              b: item.Option_B,
+              c: item.Option_C,
+              d: item.Option_D
+          },
+          correctAnswer: item.Answer
+      }));
 
-        res.redirect('/dashboard'); // Redirect to dashboard
+      // Connect to MongoDB
+      const db = await connectToDB();
+      const questionsCollection = db.collection('questions');
 
-    } catch (err) {
-        console.error('Error:', err);
-        res.status(500).send('Internal server error.');
-    }
+      // Find the existing exam document
+      const existingExam = await questionsCollection.findOne({ examId: formattedExamId });
+
+      if (existingExam) {
+          // If questions exist, find the current length
+          const currentLength = existingExam.questions.length;
+
+          // Update the numbering of new questions
+          const updatedQuestions = formattedQuestions.map((q, i) => ({
+              ...q,
+              number: currentLength + i + 1
+          }));
+
+          // Append new questions to the existing array
+          await questionsCollection.updateOne(
+              { examId: formattedExamId },
+              { $push: { questions: { $each: updatedQuestions } } }
+          );
+      } else {
+          // Insert as a new document
+          await questionsCollection.insertOne({ examId: formattedExamId, questions: formattedQuestions });
+      }
+
+      res.redirect('/dashboard'); // Redirect to dashboard
+
+  } catch (err) {
+      console.error('Error:', err);
+      res.status(500).send('Internal server error.');
+  }
 };
-
