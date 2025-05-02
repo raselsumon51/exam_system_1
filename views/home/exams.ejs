@@ -15,31 +15,33 @@
       <table class="w-full table-auto text-gray-700">
         <thead class="bg-indigo-600 text-white">
           <tr>
-            <th class="py-4 px-6 text-left w-1/7">Subject Name</th>
-            <th class="py-4 px-6 text-left w-1/7">Exam Name</th>
-            <th class="py-4 px-6 text-left w-1/7">MCQ Questions</th>
-            <th class="py-4 px-6 text-left w-1/7">Created At</th>
-            <th class="py-4 px-6 text-left w-1/7">Action 1</th>
-            <th class="py-4 px-6 text-left w-1/7">Action 2</th>
-            <th class="py-4 px-6 text-left w-1/7">Action 3</th>
+            <th class="py-4 px-6 text-center w-1/7">Subject Name</th>
+            <th class="py-4 px-6 text-center w-1/7">Exam Name</th>
+            <th class="py-4 px-6 text-center w-1/7">MCQ Questions</th>
+            <!-- <th class="py-4 px-6 text-left w-1/7">Created At</th> -->
+            <th class="py-4 px-6 text-center w-1/7">Action 1</th>
+            <th class="py-4 px-6 text-center w-1/7">Action 2</th>
+            <th class="py-4 px-6 text-center w-1/7">Action 3</th>
           </tr>
         </thead>
         <tbody>
           <% exams.forEach(exam => { %>
             <tr class="border-b hover:bg-gray-50">
-              <td class="py-4 px-6"><%= exam.subjectName %></td>
-              <td class="py-4 px-6"><%= exam.examName %></td>
-              <td class="py-4 px-6"><%= exam.numberOfQuestions %></td>
-              <td class="py-4 px-6"><%= new Date(exam.createdAt).toLocaleString() %></td>
-              <td class="py-4 px-6">
-                <a href="/exam/<%= exam._id %>/<%= exam.numberOfQuestions %>" class="inline-block px-5 py-2 bg-blue-600 text-white font-medium rounded-md shadow-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400">Add Questions</a>
+              <td class="py-4 text-center px-6"><%= exam.subjectName %></td>
+              <td class="py-4 text-center px-6"><%= exam.examName %></td>
+              <td class="py-4 text-center px-6"><%= exam.numberOfQuestions %></td>
+              <!-- <td class="py-4 px-6"><%= new Date(exam.createdAt).toLocaleString() %></td>n -->
+              <td class="py-4 text-center px-6">
+                <a href="/exam/<%= exam._id %>/<%= exam.numberOfQuestions %>" class="inline-block px-5 py-2 bg-blue-600 text-white text-sm font-medium rounded-md shadow-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400">Add Initial questions
+                </a>
               </td>
-              <td class="py-4 px-6">
-                <a href="/exam/<%= exam._id %>/" class="inline-block px-5 py-2 bg-green-600 text-white font-medium rounded-md shadow-md hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-400">Add One Question</a>
+              <td class="py-4 text-center px-6">
+                <a href="/exam/<%= exam._id %>/" class="inline-block px-5 py-2 bg-green-600 text-white text-sm font-medium rounded-md shadow-md hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-400">Append One Question</a>
               </td>
-              <td class="py-4 px-6">
-                <a href="/excel/<%= exam._id %>/" class="inline-block px-5 py-2 bg-yellow-600 text-white font-medium rounded-md shadow-md hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-400">Add Questions by Excel 1</a>
+              <td class="py-4 text-center px-6">
+                <a href="/excel/<%= exam._id %>/" class="inline-block px-5 py-2 bg-yellow-600 text-white text-sm font-medium rounded-md shadow-md hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-400">Import Questions via Excel</a>
               </td>
+              
             </tr>
           <% }); %>
         </tbody>
