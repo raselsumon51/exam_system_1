@@ -1,0 +1,46 @@
+<div class="flex items-center justify-center ">
+    <div class="w-full max-w-4xl bg-white p-6 ">
+
+      <div class="bg-indigo-600 text-white text-center p-4 rounded-t-lg">
+        <h3 class="text-xl font-semibold"><%= exams[0].subjectName %> Available Topics</h3>
+      </div>
+
+      <div class="p-4 overflow-x-auto">
+        <table class="min-w-full table-auto border border-gray-200">
+          <thead>
+            <tr class="bg-gray-100 text-left">
+              <!-- <th class="px-4 py-2 border">Subject</th> -->
+              <th class="px-4 py-2 border">   Topics</th>
+              <th class="px-4 py-2 border">Number of Questions</th>
+              <th class="px-4 py-2 border">Exam Mode</th>
+              <th class="px-4 py-2 border">Practice Mode</th>
+
+            </tr>
+          </thead>
+          <tbody>
+            <% exams.forEach(exam => { %>
+              <tr class="hover:bg-gray-50">
+                
+                <td class="px-4 py-2 border">
+                        <%= exam.examName %>
+                </td>
+                <td class="px-4 py-2 border"><%= exam.numberOfQuestions %></td>
+                <td class="px-4 py-2 border">
+                    <a href="/exam-started/<%= exam._id %>" class="text-indigo-600 hover:underline">
+                        Start Exam
+                    </a>
+                </td>
+                 <td class="px-4 py-2 border">
+                    <a href="/practice-exam/<%= exam._id %>" class="text-indigo-600 hover:underline">
+                        Start Practice
+                    </a>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+

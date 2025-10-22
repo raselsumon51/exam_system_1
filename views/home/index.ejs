@@ -1,0 +1,14 @@
+<!-- Main Content -->
+<main class="flex-grow flex flex-col items-center justify-start p-8 bg-gray-100">
+  <h2 class="text-3xl font-bold text-center mb-10 text-gray-800">Subjects</h2>
+  
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full max-w-6xl">
+    <% subjects.forEach(subject => { %>
+      <a href="/subject/<%= subject %>" 
+         class="block bg-white shadow-md rounded-xl p-6 text-center font-semibold text-gray-700
+                hover:bg-blue-50 hover:shadow-xl transition transform hover:-translate-y-1 hover:scale-105">
+        <%= subject %>
+      </a>
+    <% }) %>
+  </div>
+</main>

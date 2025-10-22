@@ -7,12 +7,11 @@ app.use(express.urlencoded({ extended: true }));
 
 
 app.set('view engine', 'ejs');
-const {postExcelFormController,getExcelFormController, deleteExamController,subjectWiseMarksController, allMarksController, submitOnequestionController, addOnequestionController,correctAnswerController,resultController,startAnExamController, submitAnsController,getQuestionController, homeController, submitHomeForm , loginController, submitloginForm, dashboardController,logoutController, addQuestionController, addExamController,getExamsController, questionsController,questionSubmitController} = require('../controllers/Controller');
+const {getPracticeQuestions, getSingleSubject,uniqueSubjects, postExcelFormController,getExcelFormController, deleteExamController,subjectWiseMarksController, allMarksController, submitOnequestionController, addOnequestionController,correctAnswerController,resultController,startAnExamController, submitAnsController,getQuestionController, homeController, submitHomeForm , loginController, submitloginForm, dashboardController,logoutController, addQuestionController, addExamController,getExamsController, questionsController,questionSubmitController} = require('../controllers/Controller');
 
-   // Middleware to check authentication
-   // Middleware to check if user is logged in
+
 const isAuthenticated = (req, res, next) => {
-   if (req.session && req.session.userId) {
+   if (req.session && req.session.userId && (req.session.role=="user" || req.session.role=="admin")) {
       // console.log(req.session.role=="user")
      return next(); // User is authenticated, proceed to the next middleware/route
    } else {
@@ -21,56 +20,55 @@ const isAuthenticated = (req, res, next) => {
  };
 
  const ensureAdminLogin = (req, res, next) => {
-   if (req.session && req.session.userId && req.session.role=="user") {
+   if (req.session && req.session.userId && req.session.role=="admin") {
      return next(); // User is authenticated, proceed to the next middleware/route
    } else {
      res.redirect('/login'); // Redirect to the login page if not logged in
    }
  };
-// const isAuthenticated = (req, res, next) => {
-//    // if (req.session.userId) {
-//        next();
-//    // } else {
-//    //     res.status(403).send('Unauthorized access');
-//    // }
-// };
 
 
-router.route('/')
+
+router.route('/signup')
    .get(homeController)
    .post(submitHomeForm)
+
 
 router.route('/login')
    .get(loginController)
    .post(submitloginForm)
 
 router.route('/dashboard')
-   .get(isAuthenticated, dashboardController)
+   .get(ensureAdminLogin ,dashboardController)
 
 
 // Logout route
 router.get("/logout",logoutController);
-router.get("/add-question",ensureAdminLogin, addQuestionController);
-router.post("/add-exam",addExamController);
-router.get("/exams",ensureAdminLogin, getExamsController);
-router.get("/exam/:examId/:numOfQuestions",questionsController);
-router.get("/exam/:examId",isAuthenticated, addOnequestionController);
-router.post("/exam/:examId",isAuthenticated,  submitOnequestionController);
+
+router.get("/add-exam", ensureAdminLogin ,addQuestionController);
+router.post("/add-exam",ensureAdminLogin, addExamController);
+
+router.get("/exams",ensureAdminLogin, getExamsController)
+router.get("/exam/:examId/:numOfQuestions", ensureAdminLogin, questionsController);
+router.get("/exam/:examId",ensureAdminLogin, addOnequestionController);
+router.post("/exam/:examId",ensureAdminLogin,  submitOnequestionController);
 // submitOnequestionController
-router.post("/question-submit",isAuthenticated, questionSubmitController);
+router.post("/question-submit",ensureAdminLogin, questionSubmitController);
 // /exam-1
+
+
 
 // router.get("/exam-1",examOneController);
 router.post("/submit-answers", submitAnsController);
 router.get("/result", resultController);
-router.get("/all-marks/:examId/:userId", allMarksController);
+router.get("/all-marks/:examId/:userId", isAuthenticated, allMarksController);
 router.get("/subject-wise-marks", isAuthenticated, subjectWiseMarksController);
 // /all-answer/${examId}/${userId}
 
 //Exam List Page Route 
-router.get("/start-an-exam", isAuthenticated, startAnExamController);
+router.get("/start-an-exam",  startAnExamController);
 router.get("/exam-started/:examId", getQuestionController);   // home/examQuestions
-router.post("/exam/delete/:examId", deleteExamController);
+router.post("/exam/delete/:examId", ensureAdminLogin, deleteExamController);
 
 
 // add  exam/67b4f554e5c0caa3812a7a80/excel route
@@ -78,8 +76,9 @@ router.get("/excel/:examId/", getExcelFormController);
 //post
 router.post("/excel/:examId/", postExcelFormController);
 
-
-
+router.get("/", uniqueSubjects);
+router.get("/subject/:subjectName", getSingleSubject);
+router.get("/practice-exam/:examId", getPracticeQuestions);
 router.get("/correct-answer/:examId", correctAnswerController);
 
 module.exports = router;

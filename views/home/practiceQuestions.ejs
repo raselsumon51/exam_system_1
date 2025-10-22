@@ -1,10 +1,15 @@
-<style>
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exam Page</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
     body {
       font-family: 'Noto Sans', 'Noto Sans Bengali', sans-serif;
       background-color: #f8fafc;
     }
-
-    /* Sticky timer styling */
     #timerContainer {
       position: sticky;
       top: 0;
@@ -13,21 +18,28 @@
       z-index: 50;
       font-weight: bold;
       text-align: center;
-    /* /  border-bottom: 2px solid #fbbf24; */
+    }
+    .correct {
+      background-color: #d1fae5 !important; /* green */
+      border: 2px solid #10b981;
+    }
+    .wrong {
+      background-color: #fee2e2 !important; /* red */
+      border: 2px solid #ef4444;
     }
   </style>
 </head>
+<body>
 
   <% data.forEach(exam => { %>
-    <!-- Subject Header -->
     <div class="bg-blue-600 text-white text-center py-3 mt-4">
       <h1 class="text-lg font-semibold">বিষয়: <%= exam.subjectName %></h1>
     </div>
 
-    <!-- Timer -->
+    <!-- Timer
     <div id="timerContainer" class="text-lg font-bengali">
       সময় বাকি: <span id="timer"><%= exam.examDuration.toString().padStart(2, '0') %>:00</span>
-    </div>
+    </div> -->
 
     <div class="flex justify-center">
       <div class="w-full max-w-3xl mx-auto">
@@ -36,12 +48,13 @@
             <p class="text-lg mb-2"><strong>টপিক:</strong> <%= exam.examName %></p>
             <p class="mb-6"><strong>মোট প্রশ্ন:</strong> <%= exam.numberOfQuestions %></p>
 
-            <form id="examForm" action="/submit-answers" method="POST">
+            <form id="examForm" action="/" method="GET">
               <input type="hidden" name="examId" value="<%= examId %>">
 
               <% exam.questions.forEach((questionSet, setIndex) => { %>
                 <% questionSet.questions.forEach((question, index) => { %>
-                  <div class="border border-gray-200 rounded-lg p-5 mb-6 bg-white">
+                  <div class="question border border-gray-200 rounded-lg p-5 mb-6 bg-white" 
+                       data-correct="<%= question.correctAnswer %>">
                     <h3 class="font-medium mb-4 leading-relaxed">
                       <span class="font-semibold text-lg"><%= (index + 1).toLocaleString('bn-BD') %>.</span>
                       <span class="font-semibold text-lg"><%= question.text %></span>
@@ -60,7 +73,7 @@
                         />
                         <label
                           for="option_<%= setIndex %>_<%= index %>_<%= key %>"
-                          class="ps-3 block rounded-lg cursor-pointer transition w-full p-2 hover:bg-gray-50"
+                          class="ps-3 block rounded-lg cursor-pointer transition w-full p-2 hover:bg-gray-50 option-label"
                         >
                           <span class="font-semibold"><%= optionLabels[optionIndex] %>.</span> <%= value %>
                         </label>
@@ -80,36 +93,53 @@
                 </button>
               </div>
             </form>
-
           </div>
         </div>
       </div>
     </div>
-
   <% }) %>
 
   <script>
-    
-    // let timeLeft = parseInt(document.getElementById('timer').textContent) * 60;
-       let timeLeft = parseInt(<%= data[0].examDuration || 0 %>) * 60;
-      //  alert(timeLeft);
-      
-    const timerEl = document.getElementById('timer');
-    const examForm = document.getElementById('examForm');
+    // Timer
+    // let timeLeft = parseInt(<%= data[0].examDuration || 0 %>) * 60;
+    // const timerEl = document.getElementById('timer');
+    // const examForm = document.getElementById('examForm');
 
-    const countdown = setInterval(() => {
-      const minutes = Math.floor(timeLeft / 60);
-      const seconds = timeLeft % 60;
-      timerEl.textContent = `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+    // const countdown = setInterval(() => {
+    //   const minutes = Math.floor(timeLeft / 60);
+    //   const seconds = timeLeft % 60;
+    //   timerEl.textContent = `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+    //   if (timeLeft <= 0) {
+    //     clearInterval(countdown);
+    //     alert('সময় শেষ! পরীক্ষাটি স্বয়ংক্রিয়ভাবে জমা দেওয়া হচ্ছে।');
+    //     examForm.submit();
+    //   }
+    //   timeLeft--;
+    // }, 1000);
 
-      if (timeLeft <= 0) {
-        clearInterval(countdown);
-        alert('সময় শেষ! পরীক্ষাটি স্বয়ংক্রিয়ভাবে জমা দেওয়া হচ্ছে।');
-        examForm.submit();
-      }
+    // Show correct/incorrect answer
+    document.querySelectorAll('.question input[type="radio"]').forEach(input => {
+      input.addEventListener('change', e => {
+        const parent = e.target.closest('.question');
+        const correctAnswer = parent.dataset.correct;
+        const selected = e.target.value;
 
-      timeLeft--;
-    }, 1000);
+        // Remove old coloring
+        parent.querySelectorAll('.option-label').forEach(label => {
+          label.classList.remove('correct', 'wrong');
+        });
+
+        // Highlight correct and wrong
+        parent.querySelectorAll('input[type="radio"]').forEach(radio => {
+          const label = radio.nextElementSibling;
+          if (radio.value === correctAnswer) {
+            label.classList.add('correct');
+          } else if (radio.checked && radio.value !== correctAnswer) {
+            label.classList.add('wrong');
+          }
+        });
+      });
+    });
   </script>
-
-
+</body>
+</html>

@@ -6,10 +6,8 @@ const path = require('path');
 const fs = require('fs');
 const xlsx = require('xlsx');
 
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 
 // Home route
 exports.homeController = (req, res) => {
@@ -17,8 +15,6 @@ exports.homeController = (req, res) => {
         layout: false,
     });
 };
-
-
 
 // Example usage in index route
 exports.submitHomeForm = async (req, res) => {
@@ -53,17 +49,9 @@ exports.submitHomeForm = async (req, res) => {
 
 // Home route
 exports.loginController = (req, res) => {
-    //console.log(req.session.userId==null)
-    
-    if(req.session.userId==null){
         res.render('home/login', {
           layout: false,
-        });
-    }
-    else{
-        res.redirect("/dashboard")
-    }
-    
+        }); 
 };
 
 // 
@@ -83,9 +71,8 @@ exports.submitloginForm = async (req, res) => {
         req.session.userId = user._id;
         req.session.role = user.role;
 
-        //console.log(user);
-        // console.log(req.session);
-        res.redirect("/dashboard");
+
+        res.redirect("/");
        
     } catch (err) {
         console.error('Error fetching user:', err);
@@ -101,7 +88,7 @@ exports.dashboardController = (req, res) => {
     //console.log(req.session)
      if (user) {
             res.render('home/welcome', {
-                layout: false,
+                layout: './layouts/admin',
                 email,
                 role
             });
@@ -124,48 +111,47 @@ exports.logoutController = (req, res) => {
 
 
 exports.addQuestionController = (req, res) => {
-    res.render('home/addQuestion', {
+    res.render('home/addExam', {
         layout: false,
     });
 };
 
-
-// // Add Exam Route
-// router.post("/add-exam", async (req, res) => {
-    
-//   });
   
 
 exports.addExamController = async (req, res) => {
-    const { subjectName, examName, numberOfQuestions } = req.body;
-  
+    const { subjectName, examName, numberOfQuestions, examDuration, marksPerQuestion, negativeMarks } = req.body;
+
     try {
-      const db = await connectToDB(); // Connect to the database
-      const collection = db.collection("exams"); // Assuming a collection called "exams"
-  
-      // Prepare the document to insert
-      const examDetails = {
-        subjectName,
-        examName,
-        numberOfQuestions: parseInt(numberOfQuestions), // Ensure it's stored as a number
-        createdAt: new Date(), // Optionally track when the exam was created
-      };
-  
-      // Insert the exam details into the collection
-      const result = await collection.insertOne(examDetails);
-  
-      // Redirect or send success message
-      if (result.acknowledged) {
-        res.redirect("/dashboard"); // Redirect to a success page after adding
-      } else {
-        res.status(500).send("Failed to save exam details.");
-      }
-  
+        const db = await connectToDB(); // Connect to the database
+        const collection = db.collection("exams"); // Assuming a collection called "exams"
+
+        // Prepare the document to insert
+        const examDetails = {
+            subjectName,
+            examName,
+            numberOfQuestions: parseInt(numberOfQuestions),       // Ensure it's stored as number
+            examDuration: parseInt(examDuration),                 // Duration in minutes
+            marksPerQuestion: parseFloat(marksPerQuestion),       // Marks per question
+            negativeMarks: parseFloat(negativeMarks),             // Negative marks per question
+            createdAt: new Date(),                                 // Track creation time
+        };
+
+        // Insert the exam details into the collection
+        const result = await collection.insertOne(examDetails);
+
+        // Redirect or send success message
+        if (result.acknowledged) {
+            res.redirect("/dashboard"); // Redirect after success
+        } else {
+            res.status(500).send("Failed to save exam details.");
+        }
+
     } catch (error) {
-      console.error("Error inserting exam data:", error);
-      res.status(500).send("Error saving exam details.");
+        console.error("Error inserting exam data:", error);
+        res.status(500).send("Error saving exam details.");
     }
 };
+
 
 
 exports.getExamsController = async (req, res) => {
@@ -194,38 +180,7 @@ exports.getExamsController = async (req, res) => {
         });    
   };
 
-//   questionSubmitController
-// exports.questionSubmitController = async (req, res) => {
-  
-  // const { examId, questions } = req.body; // Get the examId and questions from the form submission
-  // const formattedExamId = new ObjectId(examId);
 
-
-  // const formattedQuestions = questions.map((question) => {
-  //   return {
-  //     text: question.text,
-  //     options: {
-  //       a: question.option_a,
-  //       b: question.option_b,
-  //       c: question.option_c,
-  //       d: question.option_d
-  //     },
-  //     correctAnswer: question.answer // The selected answer
-  //   };
-  // });
-
-  // const db = await connectToDB(); 
-  // // Save the examId and questions to MongoDB
-  // db.collection('questions')
-  //   .insertOne({ examId: formattedExamId, questions: formattedQuestions })
-  //   .then((result) => {
-  //     res.send('Questions have been saved successfully!');
-  //   })
-  //   .catch((err) => {
-  //     console.error(err);
-  //     res.status(500).send('An error occurred while saving the questions.');
-  //   });
-// };
 exports.questionSubmitController = async (req, res) => {
   const { examId, questions } = req.body; // Get the examId and questions from the form submission
   const formattedExamId = new ObjectId(examId);
@@ -258,13 +213,6 @@ exports.questionSubmitController = async (req, res) => {
 };
 
 
-
-
-
-// examOneController
-
-
-
 exports.getQuestionController = async (req, res) => {
   try {
     const examId = req.params.examId;
@@ -286,7 +234,7 @@ exports.getQuestionController = async (req, res) => {
     // console.log(data);
 
     res.render('home/examQuestion', {
-      layout: false,
+      layout: './layouts/admin',
        data,
        examId 
     });
@@ -323,14 +271,11 @@ exports.deleteExamController = async (req, res) => {
 
 
 
-
-
-
-// 
 exports.submitAnsController = async (req, res) => {
   try {
     const db = await connectToDB();
     const { examId, ...answers } = req.body;
+    console.log(answers);
 
     // console.log(req.session.userId)
     const userAnswers = Object.keys(answers).map(key => {
@@ -360,20 +305,6 @@ exports.submitAnsController = async (req, res) => {
 };
 
 
-// // startAnExamController
-// exports.startAnExamController = async (req, res) => {
-
-//   const db = await connectToDB(); // Connect to the database
-//   const collection = db.collection("exams"); // Assuming a collection called "exams"
-//   const exams = await collection.find().toArray();   
-// // examList
-// res.render('home/examList', {
-//   layout: './layouts/admin',
-//   exams
-// });
-
-// };
-// startAnExamController
 exports.startAnExamController = async (req, res) => {
   try {
     const db = await connectToDB(); // Connect to the database
@@ -414,7 +345,6 @@ exports.resultController = async (req, res) => {
       }
     }
   ]).toArray();
-  // console.log(results)
 
 let score  = 0;
   results.forEach(result => {
@@ -440,7 +370,7 @@ let score  = 0;
   };
 
   await db.collection('results').insertOne(resultData);
-  const result = await db.collection('user_answers').deleteMany({});
+  // const result = await db.collection('user_answers').deleteMany({});
 
   res.render('home/result', {
     layout:false,
@@ -448,83 +378,10 @@ let score  = 0;
     examId: examId,
     userId: userId
   });
-
-  // res.send(`
-  //   <div class="container mx-auto mt-10 px-6 py-8 bg-white rounded-lg shadow-lg text-center">
-  //     <h2 class="text-2xl font-semibold text-gray-800 mb-6">Exam Result</h2>
-  //     <p class="text-lg text-gray-700 mb-4">
-  //       Correctly answered: <span class="font-semibold text-green-600">${score}</span> questions.
-  //     </p>
-  //     <div class="mt-6">
-  //       <a href="/correct-answer/${examId}" class="inline-block bg-blue-600 text-white px-6 py-3 rounded-md shadow-md hover:bg-blue-500 mb-4">
-  //         Go to the results page
-  //       </a>
-  //       <br />
-  //       <a href="/all-marks/${examId}/${userId}" class="inline-block bg-indigo-600 text-white px-6 py-3 rounded-md shadow-md hover:bg-indigo-500">
-  //         Go to the marks page
-  //       </a>
-  //     </div>
-  //   </div>
-  // `);
-  
-  
-  // console.log(`${result.deletedCount} documents were deleted from user_answers.`);
 };
-// resultController
-// exports.resultController = async (req, res) => {
-//   const userId  = req.session.userId;
-//   const examId = req.query.examId;
-//   const formattedExamId = new ObjectId(examId);
-//   const db = await connectToDB();
-//   const results = await db.collection('questions').aggregate([
-//       {
-//           $match: { examId: formattedExamId }  // Match the specific examId in questions collection
-//       },
-//       {
-//           $lookup: {
-//               from: 'user_answers',             // Join with the 'user_answers' collection
-//               localField: 'examId',              // Match on the examId in questions collection
-//               foreignField: 'formattedExamId',   // Match on the examId in user_answers collection
-//               as: 'userAnswers'                 // Store the result in 'userAnswers' array
-//           }
-//       }
-//   ]).toArray();
-
-//   let score = 0;
-//   results.forEach(result => {
-//       result.questions.forEach(question => {
-//           result.userAnswers.forEach(userAnswer => {
-//               userAnswer.userAnswers.forEach(answer => {
-//                   if (question.number - 1 === answer.questionId && question.correctAnswer === answer.selectedAnswer) {
-//                       score += 1;
-//                   }
-//               });
-//           });
-//       });
-//   });
-
-//   // Save the result in the 'results' collection
-//   const resultData = {
-//       userId: userId,
-//       examId: formattedExamId,
-//       score: score
-//   };
-
-//   await db.collection('results').insertOne(resultData);
-
-//   // Clear user answers for the next test (optional step, as per your current logic)
-//   // const deletionResult = await db.collection('user_answers').deleteMany({});
-
-//   res.send(`
-//       Correctly answered: ${score} questions.<br>
-//       <a href="/correct-answer/${examId}">Go to the results page</a>
-//   `);
-
-//   // console.log(`${deletionResult.deletedCount} documents were deleted from user_answers.`);
-// };
 
 
-// correctAnswerController
+
 
 exports.correctAnswerController = async (req, res) => {
       try {
@@ -603,7 +460,6 @@ exports.submitOnequestionController = async (req, res) => {
       }
     );
 
-    // console.log(`Number of questions updated to: ${nextQuestionNumber}`);
 
     // Prepare the new question to be added
     const newQuestion = {
@@ -638,43 +494,6 @@ exports.submitOnequestionController = async (req, res) => {
   }
 };
 
-
-// allMarksController/
-
-// exports.allMarksController = async (req, res) => {
-//   const { examId, userId } = req.params;
-//   try {
-//     const db = await connectToDB();
-//     console.log("hi")
-  
-//     const data = await db.collection('results').aggregate([
-//       {
-//         $lookup: {
-//           from: 'user_auth',               // Join with the 'users' collection
-//           localField: 'userId',        // Field in 'results' collection
-//           foreignField: '_id',         // Field in 'users' collection
-//           as: 'userDetails'            // Store joined data in 'userDetails'
-//         }
-//       },
-//       {
-//         $lookup: {
-//           from: 'exams',               // Join with the 'exams' collection
-//           localField: 'examId',        // Field in 'results' collection
-//           foreignField: '_id',         // Field in 'exams' collection
-//           as: 'examDetails'            // Store joined data in 'examDetails'
-//         }
-//       }
-//     ]).toArray();
-  
-//     console.log(data); // Inspect the joined data
-//     res.send(data); // Or render it in your view as needed
-//   } catch (err) {
-//     console.error('Error fetching data:', err);
-//     res.status(500).send('An error occurred while fetching data.');
-//   }
-  
-
-// }
 
 exports.allMarksController = async (req, res) => {
   const { examId, userId } = req.params;
@@ -712,9 +531,6 @@ exports.allMarksController = async (req, res) => {
       }
     ]).toArray();
 
-    // res.render('allMarks', { result: data[0] });
-    // console.log(data.length)
-
     if(data.length==0){
       res.render('home/examNotGiven', {
         layout: './layouts/admin',
@@ -727,10 +543,6 @@ exports.allMarksController = async (req, res) => {
     });
   }
 
-    
-
-    // console.log(data); // Inspect the joined data
-    // res.send(data); // Or render it in your view as needed
   } catch (err) {
     console.error('Error fetching data:', err);
     res.status(500).send('An error occurred while fetching data.');
@@ -752,17 +564,14 @@ exports.subjectWiseMarksController = async (req, res) => {
       exams, 
       layout: false,
       userId 
-    }); // Pass exams data to the EJS view
+    }); 
   } catch (err) {
     console.error('Error fetching exams:', err);
     res.status(500).send('An error occurred while fetching exams.');
   }
 }
 
-//make getExcelFormController
 exports.getExcelFormController = async (req, res) => {
-  // /excel/:examId/
-  // console.log("hi");
   const examId = req.params.examId;
 
   res.render('home/excelForm', {
@@ -772,46 +581,8 @@ exports.getExcelFormController = async (req, res) => {
 };
 
 
-// exports.postExcelFormController = async (req, res) => {
-//     try {
-//         // Check if a file was uploaded
-//         if (!req.files || !req.files.excel) {
-//             return res.status(400).send('No file uploaded.');
-//         }
 
-//         const examId = req.params.examId; // Get examId from URL parameter
-//         const file = req.files.excel; // Get the uploaded file
 
-//         // Read the Excel file from memory buffer
-//         const workbook = xlsx.read(file.data, { type: 'buffer' });
-//         const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-//         const data = xlsx.utils.sheet_to_json(worksheet);
-
-//         // Format examId and questions
-//         const formattedExamId = new ObjectId(examId);
-//         const formattedQuestions = data.map((item, index) => ({
-//             number: index + 1,
-//             text: item.Question,
-//             options: {
-//                 a: item.Option_A,
-//                 b: item.Option_B,
-//                 c: item.Option_C,
-//                 d: item.Option_D
-//             },
-//             correctAnswer: item.Answer
-//         }));
-
-//         // Connect to MongoDB and insert data
-//         const db = await connectToDB();
-//         await db.collection('questions').insertOne({ examId: formattedExamId, questions: formattedQuestions });
-
-//         res.redirect('/dashboard'); // Redirect to dashboard
-
-//     } catch (err) {
-//         console.error('Error:', err);
-//         res.status(500).send('Internal server error.');
-//     }
-// };
 
 exports.postExcelFormController = async (req, res) => {
   try {
@@ -878,5 +649,72 @@ exports.postExcelFormController = async (req, res) => {
   } catch (err) {
       console.error('Error:', err);
       res.status(500).send('Internal server error.');
+  }
+};
+
+
+exports.uniqueSubjects = async (req, res) => {
+  try {
+      const db = await connectToDB(); // Connect to the database
+      const collection = db.collection("exams"); // Assuming a collection called "exams"
+      const uniqueSubjects = await collection.distinct("subjectName"); // Get unique subject names, id  
+      
+      res.render('home/index', {
+          layout: './layouts/admin',
+          subjects: uniqueSubjects
+      });
+  } catch (error) {
+      console.error("Error fetching unique subjects:", error);
+      res.status(500).send("Error fetching unique subjects.");
+  }
+};
+
+exports.getSingleSubject = async (req, res) => {
+  try {
+      const subjectName = req.params.subjectName;
+      const db = await connectToDB(); 
+      const collection = db.collection("exams"); 
+      const exams = await collection.find({ subjectName: subjectName }).toArray();
+      console.log(exams);
+      res.render('home/singleSubject', {
+          layout: './layouts/admin',
+          subjectName,
+          exams
+      });
+  } catch (error) {
+      console.error("Error fetching exams for subject:", error);
+      res.status(500).send("Error fetching exams for subject.");
+  }
+};
+
+exports.getPracticeQuestions = async (req, res) => {
+try {
+    const examId = req.params.examId;
+    // const formattedExamId = new ObjectId(examId);
+    const db = await connectToDB();
+    const data = await db.collection('exams').aggregate([
+      {
+        $match: { _id: new ObjectId(examId) } // Match the specific exam ID
+      },
+      {
+        $lookup: {
+          from: 'questions',      // The collection to join (questions)
+          localField: '_id',    // The field from 'exams' collection
+          foreignField: 'examId',  // The field in 'questions' collection (examId)
+          as: 'questions'          // Store the joined data in 'questions'
+        }
+      }
+    ]).toArray();
+    // console.log(data);
+
+    res.render('home/practiceQuestions', {
+      layout: './layouts/admin',
+       data,
+       examId 
+    });
+    
+  } catch (err) {
+    console.error('Error fetching data:', err);
+    res.status(500).send('An error occurred while fetching data.');
   }
 };
