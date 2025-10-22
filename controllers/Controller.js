@@ -370,7 +370,7 @@ let score  = 0;
   };
 
   await db.collection('results').insertOne(resultData);
-  // const result = await db.collection('user_answers').deleteMany({});
+  const result = await db.collection('user_answers').deleteMany({});
 
   res.render('home/result', {
     layout:false,
