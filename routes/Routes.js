@@ -7,7 +7,7 @@ app.use(express.urlencoded({ extended: true }));
 
 
 app.set('view engine', 'ejs');
-const {getPracticeQuestions, getSingleSubject,uniqueSubjects, postExcelFormController,getExcelFormController, deleteExamController,subjectWiseMarksController, allMarksController, submitOnequestionController, addOnequestionController,correctAnswerController,resultController,startAnExamController, submitAnsController,getQuestionController, homeController, submitHomeForm , loginController, submitloginForm, dashboardController,logoutController, addQuestionController, addExamController,getExamsController, questionsController,questionSubmitController} = require('../controllers/Controller');
+const {getLeaderboard,getAllSubjects, getPracticeQuestions, getSingleSubject,uniqueSubjects, postExcelFormController,getExcelFormController, deleteExamController,subjectWiseMarksController, allMarksController, submitOnequestionController, addOnequestionController,correctAnswerController,resultController,startAnExamController, submitAnsController,getQuestionController, homeController, submitHomeForm , loginController, submitloginForm, dashboardController,logoutController, addQuestionController, addExamController,getExamsController, questionsController,questionSubmitController} = require('../controllers/Controller');
 
 
 const isAuthenticated = (req, res, next) => {
@@ -41,6 +41,12 @@ router.route('/login')
 router.route('/dashboard')
    .get(ensureAdminLogin ,dashboardController)
 
+// all subjects route
+router.get("/subjects", getAllSubjects);
+
+
+// leader board route
+router.get("/leader-board", getLeaderboard);
 
 // Logout route
 router.get("/logout",logoutController);

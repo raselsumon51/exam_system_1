@@ -1,46 +1,52 @@
-<div class="flex items-center justify-center ">
-    <div class="w-full max-w-4xl bg-white p-6 ">
+<div class="flex flex-col items-center py-8 px-2">
 
-      <div class="bg-indigo-600 text-white text-center p-4 rounded-t-lg">
-        <h3 class="text-xl font-semibold"><%= exams[0].subjectName %> Available Topics</h3>
-      </div>
-
-      <div class="p-4 overflow-x-auto">
-        <table class="min-w-full table-auto border border-gray-200">
-          <thead>
-            <tr class="bg-gray-100 text-left">
-              <!-- <th class="px-4 py-2 border">Subject</th> -->
-              <th class="px-4 py-2 border">   Topics</th>
-              <th class="px-4 py-2 border">Number of Questions</th>
-              <th class="px-4 py-2 border">Exam Mode</th>
-              <th class="px-4 py-2 border">Practice Mode</th>
-
-            </tr>
-          </thead>
-          <tbody>
-            <% exams.forEach(exam => { %>
-              <tr class="hover:bg-gray-50">
-                
-                <td class="px-4 py-2 border">
-                        <%= exam.examName %>
-                </td>
-                <td class="px-4 py-2 border"><%= exam.numberOfQuestions %></td>
-                <td class="px-4 py-2 border">
-                    <a href="/exam-started/<%= exam._id %>" class="text-indigo-600 hover:underline">
-                        Start Exam
-                    </a>
-                </td>
-                 <td class="px-4 py-2 border">
-                    <a href="/practice-exam/<%= exam._id %>" class="text-indigo-600 hover:underline">
-                        Start Practice
-                    </a>
-                </td>
-              </tr>
-            <% }) %>
-          </tbody>
-        </table>
-      </div>
-
-    </div>
+  <!-- Full-Width Header -->
+  <div class="w-full bg-indigo-600 text-white text-center py-4 rounded-t-md">
+    <h3 class="text-lg sm:text-xl font-semibold font-bengali">
+      <%= exams[0].subjectName %> এর বিষয়সমূহ
+    </h3>
   </div>
 
+  <!-- Table Card (Centered) -->
+  <div class="w-full max-w-4xl bg-white rounded-b-md overflow-hidden mt-4 shadow-md">
+    
+    <!-- Table Container -->
+    <div class="p-2 sm:p-4 overflow-x-auto">
+      <table class="min-w-full table-auto border border-gray-200 divide-y divide-gray-200 text-sm sm:text-base">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="px-2 sm:px-4 py-2 text-left text-gray-700 font-medium font-bengali">বিষয়</th>
+            <th class="px-2 sm:px-4 py-2 text-left text-gray-700 font-medium font-bengali">প্রশ্নের সংখ্যা</th>
+            <th class="px-2 sm:px-4 py-2 text-left text-gray-700 font-medium font-bengali">পরীক্ষা মোড</th>
+            <th class="px-2 sm:px-4 py-2 text-left text-gray-700 font-medium font-bengali">প্র্যাকটিস মোড</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% exams.forEach(exam => { %>
+            <tr class="hover:bg-indigo-50 transition">
+              <td class="px-2 sm:px-4 py-2 text-gray-800 font-medium break-words">
+                <%= exam.examName %>
+              </td>
+              <td class="px-2 sm:px-4 py-2 text-gray-600">
+                <%= exam.numberOfQuestions %>
+              </td>
+              <td class="px-2 sm:px-4 py-2">
+                <a href="/exam-started/<%= exam._id %>" 
+                   class="inline-block text-xs sm:text-sm bg-indigo-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-md font-medium hover:bg-indigo-700 transition font-bengali">
+                  পরীক্ষা শুরু করুন
+                </a>
+              </td>
+              <td class="px-2 sm:px-4 py-2">
+                <a href="/practice-exam/<%= exam._id %>" 
+                   class="inline-block text-xs sm:text-sm bg-green-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-md font-medium hover:bg-green-700 transition font-bengali">
+                  প্র্যাকটিস শুরু করুন
+                </a>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>

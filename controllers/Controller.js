@@ -5,6 +5,8 @@ const { ObjectId } = require('mongodb');
 const path = require('path');
 const fs = require('fs');
 const xlsx = require('xlsx');
+const e = require('express');
+// const { console } = require('inspector');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -69,6 +71,8 @@ exports.submitloginForm = async (req, res) => {
         const user = await collection.findOne({ email, password }); // Find a single document
         req.session.email = email;
         req.session.userId = user._id;
+        // console.log(" req.session.userId")
+        console.log(req.session.userId)
         req.session.role = user.role;
 
 
@@ -327,7 +331,10 @@ exports.startAnExamController = async (req, res) => {
 
 // resultController
 exports.resultController = async (req, res) => {
+  
     const userId  = req.session.userId;
+      console.log("User ID:", userId);
+
     const examId = req.query.examId;
     const formattedUserId = new ObjectId(userId);
     const formattedExamId = new ObjectId(examId);
@@ -347,6 +354,8 @@ exports.resultController = async (req, res) => {
   ]).toArray();
 
 let score  = 0;
+let wrong = 0;
+let skipped = 0;
   results.forEach(result => {
         result.questions.forEach(question => {
             result.userAnswers.forEach(userAnswer => {
@@ -355,28 +364,47 @@ let score  = 0;
                   //  console.log(`${question.correctAnswer} : ${answer.selectedAnswer}`)
                   score = score +1;
                 }
+                else if(question.number-1 == answer.questionId && question.correctAnswer!=answer.selectedAnswer){
+                  wrong = wrong +1;
+                } 
                 })
           });
         })
   });
 
-  // console.log(score);
+skipped = results[0].questions.length - (score + wrong);
 
+  // console.log(score);
+   
     // Save the result in the 'results' collection
-  const resultData = {
+     const resultData = {
       userId: formattedUserId,
       examId: formattedExamId,
-      score: score
+      totalQuestions: results[0].questions.length,
+      score: score,
+      wrong: wrong,
+      skipped: skipped
   };
 
+  console.log("User ID:", userId);
+  // userId: '67374cc65cc05bea0d52b98c',
+    if(userId ) {
+      console.log('kkk');
   await db.collection('results').insertOne(resultData);
   const result = await db.collection('user_answers').deleteMany({});
+  }
+
 
   res.render('home/result', {
-    layout:false,
+    layout:'./layouts/admin',
     score: score,
     examId: examId,
-    userId: userId
+    userId: userId,
+    totalQuestions: results[0].questions.length,
+    score: score,
+    wrong: wrong,
+    skipped: skipped
+  
   });
 };
 
@@ -388,7 +416,7 @@ exports.correctAnswerController = async (req, res) => {
         const examId = req.params.examId;
         // const formattedExamId = new ObjectId(examId);
         const userid = req.session.userId;
-        console.log(userid)
+        // console.log(userid)
         const db = await connectToDB();
         const data = await db.collection('exams').aggregate([
           {
@@ -403,7 +431,7 @@ exports.correctAnswerController = async (req, res) => {
             }
           }
         ]).toArray();
-        // console.log(data);
+        console.log(data);
 
 
         res.render('home/correctAnswer', {
@@ -654,6 +682,8 @@ exports.postExcelFormController = async (req, res) => {
 
 
 exports.uniqueSubjects = async (req, res) => {
+  
+  console.log(req.session)
   try {
       const db = await connectToDB(); // Connect to the database
       const collection = db.collection("exams"); // Assuming a collection called "exams"
@@ -661,7 +691,9 @@ exports.uniqueSubjects = async (req, res) => {
       
       res.render('home/index', {
           layout: './layouts/admin',
-          subjects: uniqueSubjects
+          subjects: uniqueSubjects,
+          userId: req.session.userId || null,
+          email: req.session.email || null
       });
   } catch (error) {
       console.error("Error fetching unique subjects:", error);
@@ -718,3 +750,77 @@ try {
     res.status(500).send('An error occurred while fetching data.');
   }
 };
+
+
+// getAllSubjects
+exports.getAllSubjects = async (req, res) => {
+  try {
+    const db = await connectToDB(); // Connect to the database
+    const collection = db.collection("exams"); // Assuming a collection called "exams"
+    const subjects = await collection.distinct("subjectName"); // Get unique subject names    
+    res.render('home/allSubjects', {
+      layout: './layouts/admin',
+      subjects
+    });
+  } catch (error) {
+    console.error("Error fetching unique subjects:", error);
+      res.status(500).send("Error fetching unique subjects.");
+  }
+};
+
+exports.getLeaderboard = async (req, res) => {
+  try { 
+    const db = await connectToDB();
+    // 1️⃣ Get total number of questions (total possible score)
+    const totalQuestionsArr = await db.collection('questions').aggregate([
+      { $project: { questionCount: { $size: "$questions" } } },
+      { $group: { _id: null, totalQuestions: { $sum: "$questionCount" } } }
+    ]).toArray();
+    const totalQuestions = totalQuestionsArr[0]?.totalQuestions || 0;
+    // console.log("Total Questions:", totalQuestions);
+    // 2️⃣ Get total score per user
+let userScores = await db.collection('results').aggregate([
+  {
+    $group: {
+      _id: "$userId",
+      totalScore: { $sum: "$score" }
+    }
+  },
+  {
+    $lookup: {
+      from: "user_auth",             // collection to join
+      localField: "_id",             // _id from the grouped results (userId)
+      foreignField: "_id",           // _id in user_auth collection
+      as: "userDetails"
+    }
+  },
+  { $unwind: "$userDetails" },      // flatten userDetails array
+  {
+    $project: {
+      _id: 0,
+      userId: "$_id",
+      totalScore: 1,
+      email: "$userDetails.email"   // include email from user_auth
+    }
+  }
+]).toArray();
+
+console.log(userScores);
+
+    // console.log("User Scores before percentage:", userScores);
+
+    // 3️⃣ Calculate percentage in JS and sort descending
+    userScores = userScores.map(u => ({
+      ...u,
+      percentage: (u.totalScore / totalQuestions) * 100
+    }))
+    .sort((a, b) => b.percentage - a.percentage) // sort descending
+    .map((u, index) => ({ ...u, rank: index + 1 })); // add rank
+
+    res.render('./home/leaderboard', { userScores , layout: './layouts/admin' });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server Error");
+  } 
+};  

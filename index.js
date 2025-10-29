@@ -44,8 +44,14 @@ app.use(
 );
 
 // Set session data to be available globally
+// set totalQuestions = 0 by default
 app.use(function (req, res, next) {
   res.locals.session = req.session;
+  req.session.totalQuestions = req.session.totalQuestions || 0;
+  // userId
+  res.locals.userId = req.session.userId || null;
+  res.locals.email = req.session.email || null;
+  res.locals.role = req.session.role || null;
   next();
 });
 

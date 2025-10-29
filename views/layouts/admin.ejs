@@ -4,42 +4,101 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Subjects Grid</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@100..900&display=swap" rel="stylesheet">
+      <script src="https://cdn.tailwindcss.com"></script>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .font-bengali {
+      font-family: 'Noto Sans Bengali', sans-serif;
+    }
+  </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
 
-  <!-- Header -->
-  <header class="bg-indigo-600 text-white shadow-md">
-    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-      <h1 class="text-2xl font-bold">My Exam Portal</h1>
-      <nav class="space-x-2">
-        <a href="/" class="px-3 py-2 hover:bg-indigo-500 rounded transition">Home</a>
-        <!-- <a href="/exams" class="px-3 py-2 hover:bg-indigo-500 rounded transition">Exams</a> -->
-        <!-- <a href="/subjects" class="px-3 py-2 hover:bg-indigo-500 rounded transition">Subjects</a> -->
-        <a href="/dashboard" class="px-3 py-2 hover:bg-indigo-500 rounded transition">Manage Exams</a>
-        <a href="/login" class="px-3 py-2 hover:bg-indigo-500 rounded transition">Login</a>
-        <a href="/signup" class="px-3 py-2 hover:bg-indigo-500 rounded transition">Signup</a>
-        <a href="/logout" class="px-3 py-2 hover:bg-indigo-500 rounded transition">Logout</a>
-      </nav>
-    </div>
-  </header>
+ <!-- Header -->
+<header class="bg-indigo-600 text-white shadow-md">
+  <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+    
+    <!-- Logo -->
+    <h1 class="text-2xl font-bold">My Exam Portal</h1>
+
+    <!-- Desktop Menu -->
+    <nav class="hidden md:flex space-x-2">
+      <a href="/" class="px-3 py-2 hover:bg-indigo-500 rounded transition">Home</a>
+      <a href="/subjects" class="px-3 py-2 hover:bg-indigo-500 rounded transition">বিষয়সমূহ</a>
+      <!-- রাঙ্কিং -->
+      <a href="/leader-board" class="px-3 py-2 hover:bg-indigo-500 rounded transition">Leaderboard</a>
+      <% if(role == "admin"){ %>
+          <a href="/dashboard" class="px-3 py-2 hover:bg-indigo-500 rounded transition">Manage Exams</a>
+      <% } %>
+      <!-- userId: req.session.userId || null, -->
+      <% if(userId == null){ %>
+      <a href="/login" class="px-3 py-2 hover:bg-indigo-500 rounded transition">Login</a>
+      <a href="/signup" class="px-3 py-2 hover:bg-indigo-500 rounded transition">Signup</a>
+      <% } else { %>          
+      <!-- //from email show before @ part -->
+      <p class="px-3 py-2">Hello, <%= email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1) %></p>
+      <a href="/logout" class="px-3 py-2 hover:bg-indigo-500 rounded transition">Logout</a>
+      <% } %>
+    </nav>
+
+    <!-- Mobile Menu Button -->
+    <button id="mobile-menu-button" class="md:hidden focus:outline-none">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Mobile Menu (hidden by default) -->
+  <div id="mobile-menu" class="hidden md:hidden px-4 pb-4">
+    <a href="/" class="block px-3 py-2 hover:bg-indigo-500 rounded transition">Home</a>
+    <a href="/subjects" class="block px-3 py-2 hover:bg-indigo-500 rounded transition">বিষয়সমূহ</a>
+    <a href="/dashboard" class="block px-3 py-2 hover:bg-indigo-500 rounded transition">Manage Exams</a>
+    <a href="/login" class="block px-3 py-2 hover:bg-indigo-500 rounded transition">Login</a>
+    <a href="/signup" class="block px-3 py-2 hover:bg-indigo-500 rounded transition">Signup</a>
+    <a href="/logout" class="block px-3 py-2 hover:bg-indigo-500 rounded transition">Logout</a>
+  </div>
+</header>
+
+
+
 
   <!-- Main Content -->
   <main class="flex-grow w-full mx-auto ">
     <%- body %>
   </main>
 
-  <!-- Footer -->
-  <footer class="bg-gray-800 text-gray-200">
-    <div class="max-w-7xl mx-auto px-4 py-6 flex flex-col sm:flex-row justify-between items-center">
-      <p>&copy; <%= new Date().getFullYear() %> My Exam Portal. All rights reserved.</p>
-      <div class="flex space-x-4 mt-2 sm:mt-0">
-        <a href="#" class="hover:text-white transition">Privacy</a>
-        <a href="#" class="hover:text-white transition">Terms</a>
-        <a href="#" class="hover:text-white transition">Contact</a>
-      </div>
+<!-- Footer -->
+<footer class="bg-gray-800 text-gray-200">
+  <div class="max-w-7xl mx-auto px-4 py-6 flex flex-col sm:flex-row justify-between items-center text-center sm:text-left">
+    
+    <!-- Copyright -->
+    <p class="text-sm">&copy; <%= new Date().getFullYear() %> My Exam Portal. All rights reserved.</p>
+    
+    <!-- Footer Links -->
+    <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mt-2 sm:mt-0">
+      <a href="#" class="hover:text-white transition text-sm">Privacy</a>
+      <a href="#" class="hover:text-white transition text-sm">Terms</a>
+      <a href="#" class="hover:text-white transition text-sm">Contact</a>
     </div>
-  </footer>
+    
+  </div>
+</footer>
+
 
 </body>
 </html>
+
+
+<script>
+  const btn = document.getElementById('mobile-menu-button');
+  const menu = document.getElementById('mobile-menu');
+
+  btn.addEventListener('click', () => {
+    menu.classList.toggle('hidden');
+  });
+</script>

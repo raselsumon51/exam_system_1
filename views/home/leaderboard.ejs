@@ -1,0 +1,39 @@
+<div class="flex justify-center mt-10 px-4">
+  <div class="w-full max-w-5xl">
+    <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">
+      🏆 User Scores & Ranking
+    </h1>
+
+    <div class="overflow-x-auto rounded-lg shadow-md border border-gray-200">
+      <table class="min-w-full border-collapse bg-white text-sm mx-auto">
+        <thead class="bg-blue-600 text-white">
+          <tr>
+            <th class="px-6 py-3 text-center font-semibold uppercase">Rank</th>
+            <th class="px-6 py-3 text-center font-semibold uppercase">User Email</th>
+            <th class="px-6 py-3 text-center font-semibold uppercase">Total Correct Answers</th>
+            <!-- <th class="px-6 py-3 text-center font-semibold uppercase">Percentage</th> -->
+          </tr>
+        </thead>
+
+        <tbody class="divide-y divide-gray-200">
+          <% userScores.forEach(u => { %>
+            <tr class="hover:bg-blue-50 transition-colors">
+              <td class="px-6 py-3 font-medium text-gray-700 text-center">
+                <%= u.rank %>
+              </td>
+              <td class="px-6 py-3 text-gray-700 font-mono break-all text-center">
+                <%= u.email %>
+              </td>
+              <td class="px-6 py-3 text-gray-700 font-semibold text-center">
+                <%= u.totalScore %>
+              </td>
+              <!-- <td class="px-6 py-3 text-gray-700 font-semibold text-center">
+                <%= u.percentage.toFixed(2) %>%
+              </td> -->
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
