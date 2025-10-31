@@ -1,9 +1,9 @@
-<div class="flex flex-col items-center py-8 px-2">
+<div class="flex flex-col items-center py-4">
 
   <!-- Full-Width Header -->
-  <div class="w-full bg-indigo-600 text-white text-center py-4 rounded-t-md">
+  <div class="w-full bg-indigo-600 text-white text-center py-3 ">
     <h3 class="text-lg sm:text-xl font-semibold font-bengali">
-      <%= exams[0].subjectName %> এর বিষয়সমূহ
+      <%= exams[0].subjectName %>
     </h3>
   </div>
 
@@ -19,6 +19,8 @@
             <th class="px-2 sm:px-4 py-2 text-left text-gray-700 font-medium font-bengali">প্রশ্নের সংখ্যা</th>
             <th class="px-2 sm:px-4 py-2 text-left text-gray-700 font-medium font-bengali">পরীক্ষা মোড</th>
             <th class="px-2 sm:px-4 py-2 text-left text-gray-700 font-medium font-bengali">প্র্যাকটিস মোড</th>
+            <th class="px-2 sm:px-4 py-2 text-left text-gray-700 font-medium font-bengali">উত্তর দেখুন</th>
+
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
@@ -40,6 +42,12 @@
                 <a href="/practice-exam/<%= exam._id %>" 
                    class="inline-block text-xs sm:text-sm bg-green-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-md font-medium hover:bg-green-700 transition font-bengali">
                   প্র্যাকটিস শুরু করুন
+                </a>
+              </td>
+              <td class="px-2 sm:px-4 py-2">
+                <a href="/question-answers/<%= exam._id %>" 
+                   class="inline-block text-xs sm:text-sm bg-gray-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-md font-medium hover:bg-gray-700 transition font-bengali">
+                  উত্তর দেখুন
                 </a>
               </td>
             </tr>

@@ -7,7 +7,7 @@ app.use(express.urlencoded({ extended: true }));
 
 
 app.set('view engine', 'ejs');
-const {getLeaderboard,getAllSubjects, getPracticeQuestions, getSingleSubject,uniqueSubjects, postExcelFormController,getExcelFormController, deleteExamController,subjectWiseMarksController, allMarksController, submitOnequestionController, addOnequestionController,correctAnswerController,resultController,startAnExamController, submitAnsController,getQuestionController, homeController, submitHomeForm , loginController, submitloginForm, dashboardController,logoutController, addQuestionController, addExamController,getExamsController, questionsController,questionSubmitController} = require('../controllers/Controller');
+const {getAnswers, getLeaderboard,getAllSubjects, getPracticeQuestions, getSingleSubject,uniqueSubjects, postExcelFormController,getExcelFormController, deleteExamController,subjectWiseMarksController, allMarksController, submitOnequestionController, addOnequestionController,correctAnswerController,resultController,startAnExamController, submitAnsController,getQuestionController, homeController, submitHomeForm , loginController, submitloginForm, dashboardController,logoutController, addQuestionController, addExamController,getExamsController, questionsController,questionSubmitController} = require('../controllers/Controller');
 
 
 const isAuthenticated = (req, res, next) => {
@@ -85,6 +85,8 @@ router.post("/excel/:examId/", postExcelFormController);
 router.get("/", uniqueSubjects);
 router.get("/subject/:subjectName", getSingleSubject);
 router.get("/practice-exam/:examId", getPracticeQuestions);
+// question-answers/:examId
+router.get("/question-answers/:examId", getAnswers);
 router.get("/correct-answer/:examId", correctAnswerController);
 
 module.exports = router;

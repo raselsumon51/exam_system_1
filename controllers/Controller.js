@@ -824,3 +824,51 @@ console.log(userScores);
     res.status(500).send("Server Error");
   } 
 };  
+
+// getAnswers
+// exports.getAnswers = async (req, res) => {
+//   try {
+//     const examId = req.params.examId;
+//     const db = await connectToDB();
+//     const data = await db.collection('exams').findOne({ _id: new ObjectId(examId) });
+//     res.render('home/questionAnswers', {
+//       layout: './layouts/admin',
+//       data,
+//       examId
+//     });
+//   } catch (err) {
+//     console.error('Error fetching data:', err);
+//     res.status(500).send('An error occurred while fetching data.');
+//   }
+// };  
+exports.getAnswers = async (req, res) => {
+try {
+    const examId = req.params.examId;
+    // const formattedExamId = new ObjectId(examId);
+    const db = await connectToDB();
+    const data = await db.collection('exams').aggregate([
+      {
+        $match: { _id: new ObjectId(examId) } // Match the specific exam ID
+      },
+      {
+        $lookup: {
+          from: 'questions',      // The collection to join (questions)
+          localField: '_id',    // The field from 'exams' collection
+          foreignField: 'examId',  // The field in 'questions' collection (examId)
+          as: 'questions'          // Store the joined data in 'questions'
+        }
+      }
+    ]).toArray();
+    // console.log(data);
+
+    res.render('home/questionAnswers', {
+      layout: './layouts/admin',
+       data,
+       examId 
+    });
+    
+  } catch (err) {
+    console.error('Error fetching data:', err);
+    res.status(500).send('An error occurred while fetching data.');
+  }
+};

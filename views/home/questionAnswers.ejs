@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exam Page</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Noto Sans', 'Noto Sans Bengali', sans-serif;
+      background-color: #f8fafc;
+    }
+    #timerContainer {
+      position: sticky;
+      top: 0;
+      background-color: #fef3c7;
+      padding: 10px 0;
+      z-index: 50;
+      font-weight: bold;
+      text-align: center;
+    }
+    .correct {
+      background-color: #d1fae5 !important; /* green */
+      border: 2px solid #10b981;
+    }
+    .wrong {
+      background-color: #fee2e2 !important; /* red */
+      border: 2px solid #ef4444;
+    }
+  </style>
+</head>
+<body>
+
+  <% data.forEach(exam => { %>
+    <div class="bg-blue-600 text-white text-center py-3 mt-4">
+      <h1 class="text-lg font-semibold">বিষয়: <%= exam.subjectName %></h1>
+    </div>
+
+    <div class="flex justify-center">
+      <div class="w-full max-w-3xl mx-auto">
+        <div class="question-card overflow-hidden mb-8">
+          <div class="p-6 sm:p-10">
+            <p class="text-lg mb-2"><strong>টপিক:</strong> <%= exam.examName %></p>
+            <p class="mb-6"><strong>মোট প্রশ্ন:</strong> <%= exam.numberOfQuestions %></p>
+
+            <form id="examForm" action="/" method="GET">
+              <input type="hidden" name="examId" value="<%= examId %>">
+
+              <% exam.questions.forEach((questionSet, setIndex) => { %>
+                <% questionSet.questions.forEach((question, index) => { %>
+                  <div class="question border border-gray-200 rounded-lg p-5 mb-6 bg-white"
+                       data-correct="<%= question.correctAnswer %>">
+                    <h3 class="font-medium mb-4 leading-relaxed">
+                      <span class="font-semibold text-lg"><%= (index + 1).toLocaleString('bn-BD') %>.</span>
+                      <span class="font-semibold text-lg"><%= question.text %></span>
+                    </h3>
+
+                    <% let optionLabels = ['ক', 'খ', 'গ', 'ঘ']; %>
+                    <% let optionIndex = 0; %>
+                    <% for (const [key, value] of Object.entries(question.options)) { %>
+                      <div class="flex items-center mb-3">
+                        <input
+                          type="radio"
+                          name="question_<%= setIndex %>_<%= index %>"
+                          id="option_<%= setIndex %>_<%= index %>_<%= key %>"
+                          value="<%= key %>"
+                          class="h-4 w-4 text-blue-600 cursor-pointer"
+                          <%= key === question.correctAnswer ? 'checked' : '' %>
+                          disabled
+                        >
+                        <label
+                          for="option_<%= setIndex %>_<%= index %>_<%= key %>"
+                          class="ps-3 block rounded-lg cursor-pointer transition w-full p-2 hover:bg-gray-50 option-label <%= key === question.correctAnswer ? 'correct' : '' %>"
+                        >
+                          <span class="font-semibold"><%= optionLabels[optionIndex] %>.</span> <%= value %>
+                        </label>
+                      </div>
+                      <% optionIndex++; %>
+                    <% } %>
+                  </div>
+                <% }) %>
+              <% }) %>
+
+              <div class="flex justify-center mt-10">
+                <button
+                  type="submit"
+                  class="px-8 py-3 bg-indigo-600 text-white font-semibold rounded-xl shadow-md hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+                >
+                  পরীক্ষাটি শেষ করুন
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% }) %>
+
+</body>
+</html>
