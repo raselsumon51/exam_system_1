@@ -9,48 +9,83 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@100..900&display=swap" rel="stylesheet">
       <script src="https://cdn.tailwindcss.com"></script>
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <style>
-    .font-bengali {
-      font-family: 'Noto Sans Bengali', sans-serif;
-    }
-  </style>
-</head>
+<style>
+  .font-bengali {
+    font-family: 'Noto Sans Bengali', sans-serif;
+  }
+
+  /* Custom Header Theme */
+  .custom-header {
+    background: linear-gradient(to right, #4F46E5, #2563EB); /* Indigo → Blue gradient */
+    color: #FFFFFF;
+    font-weight: 600;
+  }
+
+  /* Desktop Menu Links */
+  .custom-header nav a {
+    position: relative;
+    color: #F9FAFB;
+    text-decoration: none;
+    padding-bottom: 4px;
+    transition: color 0.3s ease;
+  }
+
+  /* Underline effect */
+  .custom-header nav a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 2px;
+    width: 0;
+    background-color: #FFFFFF;
+    transition: width 0.3s ease;
+  }
+
+  .custom-header nav a:hover::after {
+    width: 100%;
+  }
+
+  /* Mobile Menu Hover */
+  #mobile-menu a:hover {
+    background-color: #3B82F6; /* bright blue hover */
+    color: #FFFFFF;
+  }
+</style>
+
 <body class="bg-gray-100 min-h-screen flex flex-col">
 
 <!-- Header -->
-<!-- Header -->
-<header class="bg-indigo-600 text-white shadow-md">
-  <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+<header class="custom-header shadow-md">
+  <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
     
     <!-- লোগো -->
-    <a href="/" class="text-2xl font-bold">ExamPointBD</a>
+    <a href="/" class="text-2xl font-bold tracking-wide">ExamPointBD</a>
 
     <!-- ডেস্কটপ মেনু -->
-    <nav class="hidden md:flex space-x-8">
-      <a href="/" class="relative py-2 transition duration-300 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-0 after:bg-white hover:after:w-full after:transition-all after:duration-500">হোম</a>
-
-      <a href="/subjects" class="relative py-2 transition duration-300 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-0 after:bg-white hover:after:w-full after:transition-all after:duration-500">বিষয়সমূহ</a>
-
-      <a href="/leader-board" class="relative py-2 transition duration-300 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-0 after:bg-white hover:after:w-full after:transition-all after:duration-500">র‍্যাঙ্কিং</a>
+    <nav class="hidden md:flex space-x-8 text-sm font-medium">
+      <a href="/" class="relative py-2 transition duration-300">হোম</a>
+      <a href="/subjects" class="relative py-2 transition duration-300">বিষয়সমূহ</a>
+      <a href="/leader-board" class="relative py-2 transition duration-300">র‍্যাঙ্কিং</a>
 
       <% if(role == "admin"){ %>
-      <a href="/dashboard" class="relative py-2 transition duration-300 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-0 after:bg-white hover:after:w-full after:transition-all after:duration-500">পরীক্ষা পরিচালনা</a>
+      <a href="/dashboard" class="relative py-2 transition duration-300">পরীক্ষা পরিচালনা</a>
+      <% } %>
+      <% if(role == "user"){ %>
+      <a href="/subject-wise-marks" class="relative py-2 transition duration-300">স্কোর বোর্ড</a> 
       <% } %>
 
       <% if(userId == null){ %>
-      <a href="/login" class="relative py-2 transition duration-300 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-0 after:bg-white hover:after:w-full after:transition-all after:duration-500">লগইন</a>
-
-      <a href="/signup" class="relative py-2 transition duration-300 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-0 after:bg-white hover:after:w-full after:transition-all after:duration-500">নিবন্ধন</a>
-
+      <a href="/login" class="relative py-2 transition duration-300">লগইন</a>
+      <a href="/signup" class="relative py-2 transition duration-300">নিবন্ধন</a>
       <% } else { %>          
       <p class="px-3 py-2">হ্যালো, <%= email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1) %></p>
-
-      <a href="/logout" class="relative py-2 transition duration-300 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-0 after:bg-white hover:after:w-full after:transition-all after:duration-500">লগআউট</a>
+      <a href="/logout" class="relative py-2 transition duration-300">লগআউট</a>
       <% } %>
     </nav>
 
     <!-- মোবাইল মেনু বাটন -->
-    <button id="mobile-menu-button" class="md:hidden focus:outline-none">
+    <button id="mobile-menu-button" class="md:hidden focus:outline-none text-white">
       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M4 6h16M4 12h16M4 18h16" />
@@ -59,18 +94,16 @@
   </div>
 
   <!-- মোবাইল মেনু -->
-  <div id="mobile-menu" class="hidden md:hidden px-4 pb-4">
-    <a href="/" class="block px-3 py-2 hover:bg-indigo-500 rounded transition">হোম</a>
-    <a href="/subjects" class="block px-3 py-2 hover:bg-indigo-500 rounded transition">বিষয়সমূহ</a>
-    <a href="/leader-board" class="block px-3 py-2 hover:bg-indigo-500 rounded transition">র‍্যাঙ্কিং</a>
-    <a href="/dashboard" class="block px-3 py-2 hover:bg-indigo-500 rounded transition">পরীক্ষা পরিচালনা</a>
-    <a href="/login" class="block px-3 py-2 hover:bg-indigo-500 rounded transition">লগইন</a>
-    <a href="/signup" class="block px-3 py-2 hover:bg-indigo-500 rounded transition">নিবন্ধন</a>
-    <a href="/logout" class="block px-3 py-2 hover:bg-indigo-500 rounded transition">লগআউট</a>
+  <div id="mobile-menu" class="hidden md:hidden px-4 pb-4 bg-indigo-700 text-white">
+    <a href="/" class="block px-3 py-2 rounded transition">হোম</a>
+    <a href="/subjects" class="block px-3 py-2 rounded transition">বিষয়সমূহ</a>
+    <a href="/leader-board" class="block px-3 py-2 rounded transition">র‍্যাঙ্কিং</a>
+    <a href="/dashboard" class="block px-3 py-2 rounded transition">পরীক্ষা পরিচালনা</a>
+    <a href="/login" class="block px-3 py-2 rounded transition">লগইন</a>
+    <a href="/signup" class="block px-3 py-2 rounded transition">নিবন্ধন</a>
+    <a href="/logout" class="block px-3 py-2 rounded transition">লগআউট</a>
   </div>
 </header>
-
-
 
 
 
@@ -83,7 +116,7 @@
   </main>
 
 <!-- Footer -->
-<footer class="bg-gray-800 text-gray-200">
+<footer class="bg-indigo-700 text-gray-200">
   <div class="max-w-7xl mx-auto px-4 py-6 flex flex-col sm:flex-row justify-between items-center text-center sm:text-left">
     
     <!-- Copyright -->
